@@ -1,0 +1,16 @@
+.onboarding-popup {
+    /* Add your styles here */
+}
+
+.hamburger-icon {
+    /* Add your styles here */
+}
+
+.chat-icon {
+    /* Add your styles here */
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: space-between;
+}
