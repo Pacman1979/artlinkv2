@@ -2,17 +2,17 @@ import { ethers } from 'ethers'
 
 import {
   setProvider,
-  setNetwork,
+  setNetwork,   // should just be the one network
   setAccount
 } from './reducers/provider'
 
-import {
+import {          // none of this should be needed.
   setContracts,
   setSymbols,
   balancesLoaded
 } from './reducers/tokens'
 
-import {
+import {            // most of this not needed.
   setContract,
   sharesLoaded,
   swapsLoaded,
