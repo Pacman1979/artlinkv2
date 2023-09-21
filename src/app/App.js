@@ -1,3 +1,11 @@
+import Page from './page';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux'; // Import createStore from Redux
+
+import { ethers } from 'ethers'
+import { useDispatch } from 'react-redux'
+import { useEffect } from 'react'
+
 import '@rainbow-me/rainbowkit/styles.css';
 import {
   getDefaultWallets,
@@ -9,10 +17,15 @@ import {
 } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
-import OnboardingPopup from './OnboardingPopup';
+import OnboardingPopup from '../OnboardingPopup';
 
 // Components
 import Navigation from './Navigation';
+
+// Import your reducers and create a rootReducer if necessary
+// import rootReducer from './store/reducers'; // Replace with the actual path to your reducers
+
+const store = createStore(rootReducer); // Create your Redux store
 
 const cantoTest = {
     id: 7701,
@@ -55,12 +68,44 @@ const wagmiConfig = createConfig({
   })
 
 function RainbowApp() {
+  const dispatch = useDispatch()
+
+  const loadProvider = () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    dispatch(setProvider(provider))
+
+    return provider
+  }
+
+  const loadNetwork = async (provider) => {
+    const { chainId } = await provider.getNetwork()
+    dispatch(setNetwork(chainId))
+
+    return chainId
+  }
+
+  const loadAccount = async () => {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+    const account = ethers.utils.getAddress(accounts[0])
+    dispatch(setAccount(account))
+
+    return account
+  }
+
+  useEffect(() => {
+    const provider = loadProvider()
+    loadNetwork(provider)
+    loadAccount()
+  }, [])
+
   return (
-    <WagmiConfig config={wagmiConfig}>
-    <RainbowKitProvider chains={chains}>
-      <OnboardingPopup />
-    </RainbowKitProvider>
-  </WagmiConfig>
+    <Provider store={store}>
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider chains={chains}>
+          <Page /> {/* Render your RainbowApp component here */}
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </Provider>
   )
 }
 
